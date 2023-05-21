@@ -19,11 +19,14 @@ type
     DBGrid1: TDBGrid;
     ADOConnection1: TADOConnection;
     ADOTable1: TADOTable;
+    Timer1: TTimer;
     procedure Edt_SearchChange(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure ADOTable1FilterRecord(DataSet: TDataSet; var Accept: Boolean);
   private
+    function XPos(APattern, AStr: string; ACaseSensitive: Boolean): Integer;
     function FuzzyMatchStr(const Pattern, Str: string; MatchedIndexes: TList; CaseSensitive: Boolean): Boolean;
     function LowChar(AChar: Char): Char; inline;
     procedure HighlightCellText(AGrid :TDbGrid; const ARect : TRect; Field : TField;  MatchedIndexes : TList; AState:TGridDrawState ; BkColor : TColor = clYellow; SelectedBkColor : TColor = clGray);
@@ -38,6 +41,16 @@ var
 implementation
 
 {$R *.DFM}
+
+procedure TFormFuzzy.ADOTable1FilterRecord(DataSet: TDataSet; var Accept: Boolean);
+begin
+  if Chk_FuzzyMatch.Checked then
+    Accept := FuzzyMatchStr(Edt_Search.Text, DataSet.FieldByName('Name').AsString, nil, Chk_CaseSensitive.Checked)
+  else
+    Accept := XPos(Edt_Search.Text, DataSet.FieldByName('Name').AsString, Chk_CaseSensitive.Checked) > 0;
+
+//  Accept := Pos(AnsiLowerCase(Edt_Search.Text), AnsiLowerCase(DataSet.FieldByName('Name').AsString)) > 0;
+end;
 
 procedure TFormFuzzy.DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 var
@@ -80,6 +93,14 @@ end;
 
 procedure TFormFuzzy.Edt_SearchChange(Sender: TObject);
 begin
+  if Trim(Edt_Search.Text).IsEmpty then
+    ADOTable1.Filtered := False
+  else
+  begin
+    ADOTable1.Filtered := False;
+    ADOTable1.Filtered := True;
+  end;
+
   DBGrid1.Repaint;
 end;
 
@@ -151,6 +172,33 @@ begin
     Result := AChar;
 end;
 
+function TFormFuzzy.XPos(APattern, AStr: string; ACaseSensitive: Boolean): Integer;
+var
+  PIdx, SIdx: Integer;
+begin
+  Result := 0;
+  if (APattern.Trim.IsEmpty) or (AStr.Trim.IsEmpty) then
+    Exit;
+
+  if ACaseSensitive then
+  begin
+    PIdx := 1;
+    SIdx := 1;
+    while (PIdx <= Length(APattern)) and (SIdx <= Length(AStr)) do
+    begin
+      if APattern[PIdx] = AStr[SIdx] then
+      begin
+        Inc(PIdx);
+        Result := SIdx;
+        Break;
+      end;
+      Inc(SIdx);
+    end;
+  end
+  else
+    Result := Pos(LowerCase(APattern), LowerCase(AStr));
+end;
+
 procedure TFormFuzzy.HighlightCellText(AGrid :TDbGrid; const ARect : TRect; Field : TField;  MatchedIndexes : TList; AState:TGridDrawState ; BkColor : TColor = clYellow; SelectedBkColor : TColor = clGray);
 var
   LvRectArray: array of TRect;
@@ -185,10 +233,10 @@ begin
       LvRectArray[I].Right := LvRectArray[I].Left + AGrid.Canvas.TextWidth(Copy(LvDisplayText, LvPosition, length(LvDisplayText[LvPosition]))) + 1 ;
       LvRectArray[I].Bottom := ARect.Bottom - 1;
 
-      if LvRectArray[I].Right > ARect.Right then   //check for  limitation of the cell
+      if LvRectArray[I].Right > ARect.Right then  //check for  limitation of the cell
         LvRectArray[I].Right := ARect.Right;
 
-      if gdSelected in AState then // setup the color and draw the rectangle in a width of the matching text
+      if gdSelected in AState then // Setup the color and draw the rectangle in a width of the matching text
         AGrid.Canvas.Brush.Color := SelectedBkColor
       else
         AGrid.Canvas.Brush.Color := BkColor;

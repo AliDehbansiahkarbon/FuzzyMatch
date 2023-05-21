@@ -1,7 +1,7 @@
 object FormFuzzy: TFormFuzzy
   Left = 193
   Top = 108
-  Caption = 'Test String Fuzzy Match'
+  Caption = 'String Fuzzy Match Demo'
   ClientHeight = 650
   ClientWidth = 1203
   Color = clBtnFace
@@ -11,11 +11,9 @@ object FormFuzzy: TFormFuzzy
   Font.Name = 'Tahoma'
   Font.Style = []
   KeyPreview = True
-  OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
-  PixelsPerInch = 96
   TextHeight = 14
   object Panel1: TPanel
     Left = 0
@@ -24,6 +22,7 @@ object FormFuzzy: TFormFuzzy
     Height = 51
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 1199
     object lblSearch: TLabel
       Left = 16
       Top = 14
@@ -78,9 +77,8 @@ object FormFuzzy: TFormFuzzy
     Height = 599
     Align = alClient
     TabOrder = 1
-    ExplicitTop = 57
-    ExplicitWidth = 2016
-    ExplicitHeight = 776
+    ExplicitWidth = 1199
+    ExplicitHeight = 598
     object DBGrid1: TDBGrid
       Left = 1
       Top = 1
@@ -145,7 +143,14 @@ object FormFuzzy: TFormFuzzy
   end
   object ADOTable1: TADOTable
     Connection = ADOConnection1
+    OnFilterRecord = ADOTable1FilterRecord
     Left = 768
     Top = 8
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 250
+    Left = 848
+    Top = 152
   end
 end
