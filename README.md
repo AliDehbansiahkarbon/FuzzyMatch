@@ -1,5 +1,5 @@
 # FuzzyMatch
-This project is a simple functionality called fuzzy string match (o rapproximate search).
+This project demonstrates a functionality called fuzzy string match (or approximate string search).
 just compile and run the demo app.
 It could be useful for local filtering in the classic TDbgrid or a StringGrid or something like that.
 
