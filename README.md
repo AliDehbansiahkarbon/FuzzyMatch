@@ -10,3 +10,10 @@ It could be useful for local filtering in the classic TDbgrid or a StringGrid or
 ![image](https://github.com/AliDehbansiahkarbon/FuzzyMatch/assets/5601608/89eb80bd-a1d0-4f04-b708-d9502349e193)
 
 
+<hr>
+<p align="center">
+<img src="https://i0.wp.com/blogs.embarcadero.com/wp-content/uploads/2022/11/dlogonew-5582740.png?resize=254%2C242&ssl=1" alt="Delphi">
+</p>
+<h5 align="center">
+Made with :heart: on Delphi
+</h5>
